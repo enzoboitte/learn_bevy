@@ -1,7 +1,7 @@
 use bevy::prelude::*;
 
 use crate::GameState;
-use crate::utils::gameAssets::GameAssets;
+use crate::utils::game_assets::GameAssets;
 use crate::utils::animations::*;
 
 const PLAYER_SPEED: f32 = 100.0;

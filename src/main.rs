@@ -12,12 +12,12 @@ fn main() {
             entities::player::PlayerPlugin, 
             utils::animations::AnimationPlugin
         ))
-        
+
         .init_state::<GameState>()
 
         .add_loading_state(LoadingState::new(GameState::Loading)
             .continue_to_state(GameState::Playing)
-            .load_collection::<utils::gameAssets::GameAssets>()
+            .load_collection::<utils::game_assets::GameAssets>()
         )
 
         .add_systems(OnEnter(GameState::Playing), setup_camera)
