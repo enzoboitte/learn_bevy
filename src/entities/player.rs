@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::GameState;
+use crate::utils::gameAssets::GameAssets;
 use crate::utils::animations::*;
 
 const PLAYER_SPEED: f32 = 100.0;
@@ -9,8 +11,8 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app
-            .add_systems(Startup, spawn_player)
-            .add_systems(Update, (move_player, update_indices));
+            .add_systems(OnEnter(GameState::Playing), spawn_player)
+            .add_systems(Update, (move_player, update_indices).run_if(in_state(GameState::Playing)));
     }
 }
 
@@ -33,20 +35,15 @@ pub struct Player {
 
 fn spawn_player(
     mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>
+    game_assets: Res<GameAssets>,
 )
 {
-    let texture: Handle<Image> = asset_server.load("characters/player.png");
-    let layout: TextureAtlasLayout = TextureAtlasLayout::from_grid(UVec2::splat(48), 10, 4, None, None);
-    let texture_atlas_layout: Handle<TextureAtlasLayout> = texture_atlas_layouts.add(layout);
-
     commands.spawn((
         Sprite::from_atlas_image(
-            texture, 
+            game_assets.player_texture.clone(),
             TextureAtlas 
             {
-                layout: texture_atlas_layout,
+                layout: game_assets.player.clone(),
                 index: 0,
             },
         ),

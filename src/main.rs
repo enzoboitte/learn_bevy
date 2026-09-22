@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt, config::ConfigureLoadingState};
 
 mod entities;
 mod utils;
@@ -7,8 +8,19 @@ mod utils;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-        .add_plugins((entities::player::PlayerPlugin, utils::animations::AnimationPlugin))
-        .add_systems(Startup, setup_camera)
+        .add_plugins((
+            entities::player::PlayerPlugin, 
+            utils::animations::AnimationPlugin
+        ))
+        
+        .init_state::<GameState>()
+
+        .add_loading_state(LoadingState::new(GameState::Loading)
+            .continue_to_state(GameState::Playing)
+            .load_collection::<utils::gameAssets::GameAssets>()
+        )
+
+        .add_systems(OnEnter(GameState::Playing), setup_camera)
         .run();
 }
 
@@ -22,4 +34,12 @@ fn setup_camera(
             ..OrthographicProjection::default_2d()
         }
     )));
+}
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
+pub enum GameState {
+    #[default]
+    Loading,
+    Playing,
+    Paused,
 }
