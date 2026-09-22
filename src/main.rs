@@ -3,6 +3,7 @@ use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt, config:
 
 mod entities;
 mod utils;
+mod world;
 
 #[bevy_main]
 fn main() {
@@ -10,7 +11,8 @@ fn main() {
         .add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
         .add_plugins((
             entities::player::PlayerPlugin, 
-            utils::animations::AnimationPlugin
+            utils::animations::AnimationPlugin,
+            world::map::MapPlugin,
         ))
 
         .init_state::<GameState>()
