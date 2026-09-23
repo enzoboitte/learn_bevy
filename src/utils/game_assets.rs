@@ -26,6 +26,6 @@ pub struct GameAssets {
     pub big_biome_layout: Handle<TextureAtlasLayout>,
     #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 9, rows = 5))]
     pub small_biome_layout: Handle<TextureAtlasLayout>,
-    #[asset(path = "tilesets/biome.png")]
+    #[asset(path = "tilesets/grass_biome.png")]
     pub big_biome_texture: Handle<Image>,
 }
