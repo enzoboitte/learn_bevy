@@ -13,8 +13,10 @@ const GRID_CELL_SIZE: f32 = 16.0;
 
 pub struct PlayerPlugin;
 
-impl Plugin for PlayerPlugin {
-    fn build(&self, app: &mut App) {
+impl Plugin for PlayerPlugin 
+{
+    fn build(&self, app: &mut App) 
+    {
         app
             .add_systems(OnEnter(GameState::Playing), spawn_player)
             .add_systems(Update, (move_player, update_indices, on_entity_clicked_over)
@@ -22,13 +24,15 @@ impl Plugin for PlayerPlugin {
     }
 }
 
-pub enum PlayerDirection {
+pub enum PlayerDirection 
+{
     Up,
     Down,
     Left,
     Right
 }
-pub enum PlayerState {
+pub enum PlayerState 
+{
     Idle,
     Walking
 }
@@ -37,7 +41,8 @@ pub enum PlayerState {
 pub struct InteractionRange(pub f32);
 
 #[derive(Component)]
-pub struct Player {
+pub struct Player 
+{
     pub current_direction: PlayerDirection,
     pub state: PlayerState,
 }
@@ -77,17 +82,6 @@ fn spawn_player(
         InteractionRange(22.0),
     ));
 }
-
-/*fn draw_player_border(
-    mut gizmos: Gizmos,
-    player: Single<&GlobalTransform, With<Player>>,
-) {
-    gizmos.rect_2d(
-        Isometry2d::from_translation(player.translation().truncate()),
-        Vec2::splat(20.0),
-        Color::srgb(0.2, 0.8, 1.0),
-    );
-}*/
 
 fn update_indices(
     mut query: Query<(&mut AnimationIndices, &mut Sprite, &Player)>
@@ -218,8 +212,10 @@ fn on_entity_clicked_over(
                         ));
                     }
 
-                    for (tile_x, tile_y) in PathMap::affected_tiles(x, y) {
-                        if PathMap::is_inside(tile_x, tile_y) {
+                    for (tile_x, tile_y) in PathMap::affected_tiles(x, y) 
+                    {
+                        if PathMap::is_inside(tile_x, tile_y) 
+                        {
                             let mask = path_map.path_mask(tile_x, tile_y);
                             let index = PATH_TILE_BY_MASK[mask as usize];
 

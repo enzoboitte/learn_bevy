@@ -4,7 +4,8 @@ pub const MAP_HEIGHT: usize = 12;
 pub const WATER_INDEX: usize = 0;
 
 #[rustfmt::skip]
-pub const GRASS: [[i32; MAP_WIDTH]; MAP_HEIGHT] = [
+pub const GRASS: [[i32; MAP_WIDTH]; MAP_HEIGHT] = 
+[
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1,  0,  1,  1,  1,  1,  2, -1, -1, -1, -1, -1],
@@ -20,7 +21,8 @@ pub const GRASS: [[i32; MAP_WIDTH]; MAP_HEIGHT] = [
 ];
 
 #[rustfmt::skip]
-pub const BIG_BIOME: [[i32; MAP_WIDTH]; MAP_HEIGHT] = [
+pub const BIG_BIOME: [[i32; MAP_WIDTH]; MAP_HEIGHT] = 
+[
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -36,7 +38,8 @@ pub const BIG_BIOME: [[i32; MAP_WIDTH]; MAP_HEIGHT] = [
 ];
 
 #[rustfmt::skip]
-pub const SMALL_BIOME: [[i32; MAP_WIDTH]; MAP_HEIGHT] = [
+pub const SMALL_BIOME: [[i32; MAP_WIDTH]; MAP_HEIGHT] = 
+[
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, 42, -1, -1, -1, -1, -1, -1, -1, -1, 41, -1, -1],
     [-1, -1, 44, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -50,36 +53,3 @@ pub const SMALL_BIOME: [[i32; MAP_WIDTH]; MAP_HEIGHT] = [
     [-1, -1, 41, -1, -1, -1, -1, -1, -1, -1, 43, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
 ];
-
-
-/*pub static mut CULTURE: [[i32; MAP_WIDTH]; MAP_HEIGHT] = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
-pub fn get_tile_index(x: usize, y: usize) -> i32 {
-    if x >= MAP_WIDTH || y >= MAP_HEIGHT {
-        return -1;
-    }
-    unsafe { CULTURE[y][x] }
-}
-
-pub fn set_tile_index(x: usize, y: usize, index: i32) {
-    if x >= MAP_WIDTH || y >= MAP_HEIGHT {
-        return;
-    }
-    
-    unsafe {
-        CULTURE[y][x] = index;
-    }
-}*/

@@ -8,8 +8,10 @@ use crate::world::tiled::*;
 
 pub struct MapPlugin;
 
-impl Plugin for MapPlugin {
-    fn build(&self, app: &mut App) {
+impl Plugin for MapPlugin 
+{
+    fn build(&self, app: &mut App) 
+    {
         app.add_systems(OnEnter(GameState::Playing), setup_map);
     }
 }
@@ -28,7 +30,8 @@ fn setup_map(
             commands.spawn(
                 (Sprite::from_atlas_image(
                     game_assets.water_texture.clone(), 
-                    TextureAtlas { 
+                    TextureAtlas 
+                    { 
                         layout: game_assets.water_layout.clone(),
                         index: WATER_INDEX,
                     }
@@ -43,7 +46,8 @@ fn setup_map(
                 commands.spawn(
                     (Sprite::from_atlas_image(
                         game_assets.grass_texture.clone(), 
-                        TextureAtlas { 
+                        TextureAtlas 
+                        { 
                             layout: game_assets.grass_layout.clone(),
                             index: grass_value as usize,
                         }
@@ -65,7 +69,8 @@ fn setup_map(
                 commands.spawn(
                     (Sprite::from_atlas_image(
                         game_assets.big_biome_texture.clone(), 
-                        TextureAtlas { 
+                        TextureAtlas 
+                        { 
                             layout: game_assets.big_biome_layout.clone(),
                             index: biome_value as usize,
                         }
@@ -87,7 +92,8 @@ fn setup_map(
                 commands.spawn(
                     (Sprite::from_atlas_image(
                         game_assets.big_biome_texture.clone(), 
-                        TextureAtlas { 
+                        TextureAtlas 
+                        { 
                             layout: game_assets.small_biome_layout.clone(),
                             index: biome_value as usize,
                         }

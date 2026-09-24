@@ -9,7 +9,8 @@ mod utils;
 mod world;
 
 #[bevy_main]
-fn main() {
+fn main() 
+{
     App::new()
         .add_plugins((
             DefaultPlugins.set(ImagePlugin::default_nearest()),
@@ -52,7 +53,8 @@ fn setup_world(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+) 
+{
     // Spawns a white plane at one unit below the origin
     commands
         .spawn((
@@ -65,7 +67,8 @@ fn setup_world(
 
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
-pub enum GameState {
+pub enum GameState 
+{
     #[default]
     Loading,
     Playing,

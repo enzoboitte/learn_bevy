@@ -4,14 +4,17 @@ use crate::entities::player::*;
 
 pub struct AnimationPlugin;
 
-impl Plugin for AnimationPlugin {
-    fn build(&self, app: &mut App) {
+impl Plugin for AnimationPlugin 
+{
+    fn build(&self, app: &mut App) 
+    {
         app.add_systems(Update, animate_sprites);
     }
 }
 
 #[derive(Component)]
-pub struct AnimationIndices {
+pub struct AnimationIndices 
+{
     pub first: usize,
     pub last: usize,
 }
