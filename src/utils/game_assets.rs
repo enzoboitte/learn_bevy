@@ -1,4 +1,4 @@
-use bevy::{asset, prelude::*};
+use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::*;
 
 #[derive(AssetCollection, Resource)]
@@ -28,4 +28,10 @@ pub struct GameAssets {
     pub small_biome_layout: Handle<TextureAtlasLayout>,
     #[asset(path = "tilesets/grass_biome.png")]
     pub big_biome_texture: Handle<Image>,
+
+    // paths
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 11, rows = 7))]
+    pub paths_layout: Handle<TextureAtlasLayout>,
+    #[asset(path = "tilesets/dirt.png")]
+    pub paths_texture: Handle<Image>,
 }

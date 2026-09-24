@@ -103,7 +103,7 @@ fn setup_map(
     }
 }
 
-fn tile_to_world(x: usize, y: usize) -> Vec2
+pub fn tile_to_world(x: usize, y: usize) -> Vec2
 {
     Vec2::new(
         (x as f32 - (MAP_WIDTH - 1) as f32 / 2.0) * TILE_SIZE,

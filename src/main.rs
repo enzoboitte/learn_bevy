@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt, config::ConfigureLoadingState};
 
-use crate::utils::click_plugin::ClickPlugin;
+use crate::{utils::{click_plugin::ClickPlugin}, world::paths::PathMap};
 
 mod entities;
 mod utils;
@@ -24,6 +24,7 @@ fn main() {
         ))
 
         .init_state::<GameState>()
+        .init_resource::<PathMap>()
 
         .add_loading_state(LoadingState::new(GameState::Loading)
             .continue_to_state(GameState::Playing)
