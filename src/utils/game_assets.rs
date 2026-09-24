@@ -35,4 +35,10 @@ pub struct GameAssets
     pub paths_layout: Handle<TextureAtlasLayout>,
     #[asset(path = "tilesets/dirt.png")]
     pub paths_texture: Handle<Image>,
+
+    // plants
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 6, rows = 2))]
+    pub plant: Handle<TextureAtlasLayout>,
+    #[asset(path = "tilesets/plants.png")]
+    pub plant_texture: Handle<Image>,
 }

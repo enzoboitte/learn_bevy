@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt, config::ConfigureLoadingState};
 
-use crate::{utils::{click_plugin::ClickPlugin}, world::paths::PathMap};
+use crate::{entities::plant::PlantPlugin, utils::click_plugin::ClickPlugin, world::paths::PathMap};
 
 mod entities;
 mod utils;
@@ -22,6 +22,7 @@ fn main()
             utils::animations::AnimationPlugin,
             world::map::MapPlugin,
             ClickPlugin,
+            PlantPlugin,
         ))
 
         .init_state::<GameState>()
@@ -43,7 +44,7 @@ fn setup_camera(
 {
     commands.spawn((Camera2d, Projection::Orthographic(OrthographicProjection 
         {
-            scale: 0.3,
+            scale: 0.2,
             ..OrthographicProjection::default_2d()
         }
     )));

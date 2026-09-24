@@ -36,7 +36,7 @@ fn setup_map(
                         index: WATER_INDEX,
                     }
                 ), 
-                AnimationIndices { first: 0, last: 3 },
+                AnimationIndices {  mode: TimerMode::Repeating, start: WATER_INDEX, first: 0, last: 3 },
                 FrameTimer(Timer::from_seconds(0.5, TimerMode::Repeating)),
                 Transform::from_xyz(pos.x, pos.y, 0.0)
             ));

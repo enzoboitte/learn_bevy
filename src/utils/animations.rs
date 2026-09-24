@@ -12,9 +12,18 @@ impl Plugin for AnimationPlugin
     }
 }
 
+#[derive(Message)]
+pub struct AnimationStep
+{
+    pub entity: Entity,
+    pub index: usize,
+}
+
 #[derive(Component)]
 pub struct AnimationIndices 
 {
+    pub mode: TimerMode,
+    pub start: usize,
     pub first: usize,
     pub last: usize,
 }
@@ -24,17 +33,26 @@ pub struct FrameTimer(pub Timer);
 
 pub fn animate_sprites(
     time: Res<Time>,
-    mut query: Query<(&AnimationIndices, &mut FrameTimer, &mut Sprite)>
+    mut query: Query<(Entity, &AnimationIndices, &mut FrameTimer, &mut Sprite)>,
+
+    mut writer: MessageWriter<AnimationStep>,
 )
 {
-    for (indices, mut timer, mut sprite) in query.iter_mut() 
+    for (entity, indices, mut timer, mut sprite) in query.iter_mut() 
     {
         timer.0.tick(time.delta());
 
         if timer.0.just_finished() 
         {
+            if indices.mode == TimerMode::Once && sprite.texture_atlas.as_ref().unwrap().index == indices.last
+            { continue; }
             if let Some(atlas) = &mut sprite.texture_atlas 
             {
+                writer.write(AnimationStep 
+                { 
+                    entity: entity, 
+                    index: atlas.index - indices.start, 
+                });
                 atlas.index = if atlas.index == indices.last 
                 {
                     indices.first

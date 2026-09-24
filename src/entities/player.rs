@@ -2,11 +2,11 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
 use crate::GameState;
+use crate::entities::plant::{Plant, PlantState, PlantType, SpawnPlant};
 use crate::utils::click_plugin::{CursorEvent, EntityClicked};
 use crate::utils::game_assets::GameAssets;
 use crate::utils::animations::*;
-use crate::world::map::tile_to_world;
-use crate::world::paths::{PATH_TILE_BY_MASK, PathMap, PathTile, world_to_tile};
+use crate::world::paths::{PathMap, PathTile};
 
 const PLAYER_SPEED: f32 = 100.0;
 const GRID_CELL_SIZE: f32 = 16.0;
@@ -69,6 +69,8 @@ fn spawn_player(
         },
         AnimationIndices 
         {
+            mode: TimerMode::Repeating,
+            start: 0,
             first: 0,
             last: 1,
         },
@@ -154,6 +156,9 @@ fn on_entity_clicked_over(
     mut commands: Commands,
     mut reader: MessageReader<EntityClicked>,
     player: Single<(&GlobalTransform, &InteractionRange), With<Player>>,
+    plants: Query<(), With<Plant>>,
+
+    mut writer: MessageWriter<SpawnPlant>,
 
     mut gizmos: Gizmos,
     game_assets: Res<GameAssets>,
@@ -183,10 +188,22 @@ fn on_entity_clicked_over(
 
         if event.cursor_event == CursorEvent::CLICK
         {
-            if let Some(entity) = event.entity 
+            if let Some(entity) = event.entity
             {
-                commands.entity(entity).despawn();
-            } else if let Some((x, y)) = world_to_tile(pos)
+                if !plants.contains(entity)
+                { commands.entity(entity).despawn(); }
+                
+            } else 
+            {
+                writer.write(SpawnPlant 
+                    { 
+                        plant_type: PlantType::TOMATO, 
+                        plant_state: PlantState::FIRSTGROWTH, 
+                        position: Vec3::new(pos.x, pos.y, 2.0),
+                        growth_duration: 1.0, // 10s 
+                });
+            }
+            /*if let Some((x, y)) = world_to_tile(pos)
             {
                 path_map.set_path(x, y);
 
@@ -232,7 +249,7 @@ fn on_entity_clicked_over(
                         }
                     }
                 }
-            }
+            }*/
         }
     }
 }
