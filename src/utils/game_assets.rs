@@ -4,6 +4,11 @@ use bevy_asset_loader::asset_collection::*;
 #[derive(AssetCollection, Resource)]
 pub struct GameAssets 
 {
+    // font
+    #[asset(path = "fonts/pixelFont.ttf")]
+    pub font: Handle<Font>,
+
+    // player
     #[asset(texture_atlas_layout(tile_size_x = 48, tile_size_y = 48, columns = 10, rows = 4))]
     pub player: Handle<TextureAtlasLayout>,
     #[asset(path = "characters/player.png")]

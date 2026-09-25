@@ -107,7 +107,8 @@ fn spawn_plant(
                     Text2d::new((spawn_plant.growth_duration * (range.end - range.start) as f32).to_string()),
                     TextFont
                     {
-                        font_size: FontSize::Px(4.0),
+                        font: FontSource::Handle(game_assets.font.clone()),
+                        font_size: FontSize::Px(6.0),
                         ..default()
                     },
                     TextColor(Color::WHITE),
@@ -119,6 +120,7 @@ fn spawn_plant(
 }
 
 fn update_plants(
+    mut commands: Commands,
     mut plants: Query<(&mut Plant, &mut AnimationIndices, &mut Children)>,
     mut texts: Query<&mut Text2d>,
 
@@ -151,6 +153,11 @@ fn update_plants(
 
         if let Some(&text_entity) = children.first() 
         {
+            if remaining_time <= 0.0 
+            {
+                commands.entity(text_entity).despawn();
+                continue;
+            }
             if let Ok(mut text) = texts.get_mut(text_entity) 
             {
                 text.0 = format!("{:.1}", remaining_time);
