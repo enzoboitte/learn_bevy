@@ -140,7 +140,7 @@ pub const PATH_TILE_BY_MASK: [usize; 16] =
     map.path_mask(x, y)
 }*/
 
-pub fn world_to_tile(world_position: Vec2) -> Option<(usize, usize)> 
+pub fn world_to_tile_path(world_position: Vec2) -> Option<(usize, usize)> 
 {
     let x = (world_position.x / TILE_SIZE + MAP_WIDTH as f32 / 2.0).floor();
     let y = (MAP_HEIGHT as f32 / 2.0 - world_position.y / TILE_SIZE).floor();

@@ -66,7 +66,7 @@ fn setup_map(
             {
                 let pos = tile_to_world(x, y);
 
-                commands.spawn(
+                add_entity_to_map(pos, commands.spawn(
                     (Sprite::from_atlas_image(
                         game_assets.big_biome_texture.clone(), 
                         TextureAtlas 
@@ -76,7 +76,7 @@ fn setup_map(
                         }
                     ), 
                     Transform::from_xyz(pos.x, pos.y, 4.0)
-                ));
+                )).id());
             }
         }
     }
@@ -89,7 +89,7 @@ fn setup_map(
             {
                 let pos = tile_to_world(x, y);
 
-                commands.spawn(
+                add_entity_to_map(pos, commands.spawn(
                     (Sprite::from_atlas_image(
                         game_assets.big_biome_texture.clone(), 
                         TextureAtlas 
@@ -103,7 +103,7 @@ fn setup_map(
                     Collider::cuboid(TILE_SIZE / 2.0, TILE_SIZE / 4.0, 0.1),
 
                     Clickable,
-                ));
+                )).id());
             }
         }
     }
@@ -115,4 +115,63 @@ pub fn tile_to_world(x: usize, y: usize) -> Vec2
         (x as f32 - (MAP_WIDTH - 1) as f32 / 2.0) * TILE_SIZE,
         ((MAP_HEIGHT - 1) as f32 / 2.0 - y as f32) * TILE_SIZE,
     )
+}
+
+pub fn world_to_tile(pos: Vec2) -> Option<(usize, usize)>
+{
+    let x = ((pos.x / TILE_SIZE) + (MAP_WIDTH - 1) as f32 / 2.0).round() as isize;
+    let y = (((MAP_HEIGHT - 1) as f32 / 2.0) - (pos.y / TILE_SIZE)).round() as isize;
+
+    if x >= 0 && x < MAP_WIDTH as isize && y >= 0 && y < MAP_HEIGHT as isize 
+    {
+        Some((x as usize, y as usize))
+    } 
+    else 
+    {
+        None
+    }
+}
+
+pub fn is_tile_occupied(position: Vec2) -> bool
+{
+    print!("Checking if tile is occupied at position: {:?}", position);
+    if let Some((x, y)) = world_to_tile(position)
+    {
+        println!("Converted to tile coordinates: ({}, {})", x, y);
+        let ret = ENTITY_MAP.read().unwrap().contains_key(&(x, y));
+        println!("Tile occupied: {}", ret);
+
+        ret
+    } else {
+        false
+    }
+}
+
+pub fn add_entity_to_map(position: Vec2, entity: Entity)
+{
+    if let Some((x, y)) = world_to_tile(position)
+    {
+        ENTITY_MAP.write().unwrap().insert((x, y), entity);
+    }
+}
+
+pub fn remove_entity_from_map(position: Vec2)
+{
+    if let Some((x, y)) = world_to_tile(position)
+    {
+        ENTITY_MAP.write().unwrap().remove(&(x, y));
+    }
+}
+
+pub fn remove_entity_from_map_by_id(entity: Entity)
+{
+    let mut entity_map = ENTITY_MAP.write().unwrap();
+    let key_to_remove = entity_map.iter()
+        .find(|(_, e)| e.index() == entity.index())
+        .map(|(&key, _)| key);
+
+    if let Some(key) = key_to_remove 
+    {
+        entity_map.remove(&key);
+    }
 }

@@ -1,3 +1,7 @@
+use std::sync::{LazyLock, RwLock};
+
+use bevy::{ecs::entity::Entity, math::Vec2, platform::collections::HashMap};
+
 pub const TILE_SIZE: f32 = 16.0;
 pub const MAP_WIDTH: usize = 16;
 pub const MAP_HEIGHT: usize = 12;
@@ -53,3 +57,6 @@ pub const SMALL_BIOME: [[i32; MAP_WIDTH]; MAP_HEIGHT] =
     [-1, -1, 41, -1, -1, -1, -1, -1, -1, -1, 43, -1, -1, -1, -1, -1],
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
 ];
+
+// static HashMap for all entity
+pub static ENTITY_MAP: LazyLock<RwLock<HashMap<(usize, usize), Entity>>> = LazyLock::new(|| RwLock::new(HashMap::new()));

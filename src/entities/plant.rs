@@ -2,7 +2,7 @@ use std::{ops::Range, sync::LazyLock};
 use bevy::{platform::collections::HashMap, prelude::*};
 use bevy_rapier3d::prelude::*;
 
-use crate::{GameState, utils::{animations::{AnimationIndices, AnimationStep, FrameTimer}, game_assets::GameAssets}};
+use crate::{GameState, utils::{animations::{AnimationIndices, AnimationStep, FrameTimer}, game_assets::GameAssets}, world::{map::{add_entity_to_map, world_to_tile}, tiled::ENTITY_MAP}};
 
 pub struct PlantPlugin;
 
@@ -70,7 +70,8 @@ fn spawn_plant(
     {
         let start_time = time.elapsed_secs();
         let range = INDEX_PLANT_TYPE.get(&spawn_plant.plant_type).unwrap();
-        commands.spawn((
+
+        add_entity_to_map(spawn_plant.position.truncate(), commands.spawn((
             Sprite::from_atlas_image(
                 game_assets.plant_texture.clone(),
                 TextureAtlas 
@@ -115,7 +116,7 @@ fn spawn_plant(
                     Transform::from_xyz(0.0, 6.0, 1.0),
                 ));
             }
-        );
+        ).id());
     }
 }
 

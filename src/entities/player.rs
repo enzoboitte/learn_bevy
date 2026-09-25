@@ -6,6 +6,7 @@ use crate::entities::plant::{Plant, PlantState, PlantType, SpawnPlant};
 use crate::utils::click_plugin::{CursorEvent, EntityClicked};
 use crate::utils::game_assets::GameAssets;
 use crate::utils::animations::*;
+use crate::world::map::{is_tile_occupied, remove_entity_from_map_by_id};
 use crate::world::paths::{PathMap, PathTile};
 
 const PLAYER_SPEED: f32 = 100.0;
@@ -19,7 +20,7 @@ impl Plugin for PlayerPlugin
     {
         app
             .add_systems(OnEnter(GameState::Playing), spawn_player)
-            .add_systems(Update, (move_player, update_indices, on_entity_clicked_over)
+            .add_systems(Update, (move_player, update_indices, on_entity_clicked_over, on_click_player)
                                                         .run_if(in_state(GameState::Playing)));
     }
 }
@@ -191,9 +192,15 @@ fn on_entity_clicked_over(
             if let Some(entity) = event.entity
             {
                 if !plants.contains(entity)
-                { commands.entity(entity).despawn(); }
+                { 
+                    let id = commands.entity(entity).id();
+                    remove_entity_from_map_by_id(id); 
+
+                    commands.entity(id).despawn();
+
+                }
                 
-            } else 
+            } else if !is_tile_occupied(pos)
             {
                 writer.write(SpawnPlant 
                     { 
@@ -202,8 +209,7 @@ fn on_entity_clicked_over(
                         position: Vec3::new(pos.x, pos.y, 2.0),
                         growth_duration: 1.0, // 10s 
                 });
-            }
-            /*if let Some((x, y)) = world_to_tile(pos)
+            } /*else if let Some((x, y)) = world_to_tile_path(pos)
             {
                 path_map.set_path(x, y);
 
@@ -250,6 +256,34 @@ fn on_entity_clicked_over(
                     }
                 }
             }*/
+        }
+    }
+}
+
+fn on_click_player(
+    mut commands: Commands,
+    mut reader: MessageReader<EntityClicked>,
+
+    player: Single<(&GlobalTransform, &InteractionRange), With<Player>>,
+    plants: Query<(), With<Plant>>,
+)
+{
+    for event in reader.read() 
+    {
+        let (player_tf, range) = *player;
+        let player_pos = player_tf.translation().truncate();
+        let distance = player_pos.distance(event.entity_pos);
+
+        if distance > range.0
+        { continue; }
+
+        if event.cursor_event == CursorEvent::CLICK
+        {
+            if let Some(entity) = event.entity
+            {
+                if !plants.contains(entity)
+                { commands.entity(entity).despawn(); }
+            }
         }
     }
 }
