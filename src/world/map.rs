@@ -3,6 +3,7 @@ use bevy_rapier3d::prelude::*;
 
 use crate::utils::animations::{AnimationIndices, FrameTimer};
 use crate::utils::click_plugin::Clickable;
+use crate::world::entities_world::EntitiesWorld;
 use crate::{GameState, utils::game_assets::GameAssets};
 use crate::world::tiled::*;
 
@@ -19,6 +20,7 @@ impl Plugin for MapPlugin
 fn setup_map(
     mut commands: Commands,
     game_assets: Res<GameAssets>,
+    mut world: ResMut<EntitiesWorld>,
 )
 {
     for (y, row) in GRASS.iter().enumerate() 
@@ -66,7 +68,7 @@ fn setup_map(
             {
                 let pos = tile_to_world(x, y);
 
-                add_entity_to_map(pos, commands.spawn(
+                world.insert(pos, commands.spawn(
                     (Sprite::from_atlas_image(
                         game_assets.big_biome_texture.clone(), 
                         TextureAtlas 
@@ -89,7 +91,7 @@ fn setup_map(
             {
                 let pos = tile_to_world(x, y);
 
-                add_entity_to_map(pos, commands.spawn(
+                world.insert(pos, commands.spawn(
                     (Sprite::from_atlas_image(
                         game_assets.big_biome_texture.clone(), 
                         TextureAtlas 
@@ -132,22 +134,18 @@ pub fn world_to_tile(pos: Vec2) -> Option<(usize, usize)>
     }
 }
 
-pub fn is_tile_occupied(position: Vec2) -> bool
+/*pub fn is_tile_occupied(position: Vec2) -> bool
 {
-    print!("Checking if tile is occupied at position: {:?}", position);
     if let Some((x, y)) = world_to_tile(position)
     {
-        println!("Converted to tile coordinates: ({}, {})", x, y);
-        let ret = ENTITY_MAP.read().unwrap().contains_key(&(x, y));
-        println!("Tile occupied: {}", ret);
-
-        ret
-    } else {
+        ENTITY_MAP.read().unwrap().contains_key(&(x, y))
+    } else 
+    {
         false
     }
-}
+}*/
 
-pub fn add_entity_to_map(position: Vec2, entity: Entity)
+/*pub fn add_entity_to_map(position: Vec2, entity: Entity)
 {
     if let Some((x, y)) = world_to_tile(position)
     {
@@ -174,4 +172,4 @@ pub fn remove_entity_from_map_by_id(entity: Entity)
     {
         entity_map.remove(&key);
     }
-}
+}*/

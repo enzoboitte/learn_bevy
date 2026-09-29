@@ -2,11 +2,12 @@ use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
 
 use crate::GameState;
-use crate::entities::plant::{Plant, PlantState, PlantType, SpawnPlant};
+use crate::entities::plant::*;
 use crate::utils::click_plugin::{CursorEvent, EntityClicked};
 use crate::utils::game_assets::GameAssets;
 use crate::utils::animations::*;
-use crate::world::map::{is_tile_occupied, remove_entity_from_map_by_id};
+use crate::utils::inventory::Inventory;
+use crate::world::entities_world::EntitiesWorld;
 use crate::world::paths::{PathMap, PathTile};
 
 const PLAYER_SPEED: f32 = 100.0;
@@ -20,7 +21,7 @@ impl Plugin for PlayerPlugin
     {
         app
             .add_systems(OnEnter(GameState::Playing), spawn_player)
-            .add_systems(Update, (move_player, update_indices, on_entity_clicked_over, on_click_player)
+            .add_systems(Update, (move_player, update_indices, on_entity_clicked_over)
                                                         .run_if(in_state(GameState::Playing)));
     }
 }
@@ -157,7 +158,8 @@ fn on_entity_clicked_over(
     mut commands: Commands,
     mut reader: MessageReader<EntityClicked>,
     player: Single<(&GlobalTransform, &InteractionRange), With<Player>>,
-    plants: Query<(), With<Plant>>,
+    mut inventory: ResMut<Inventory>,
+    plants: Query<&Plant, With<Plant>>,
 
     mut writer: MessageWriter<SpawnPlant>,
 
@@ -165,6 +167,8 @@ fn on_entity_clicked_over(
     game_assets: Res<GameAssets>,
     mut path_map: ResMut<PathMap>,
     mut path_tiles: Query<(&PathTile, &mut Sprite)>,
+
+    mut world: ResMut<EntitiesWorld>
 ) 
 {
     let (player_tf, range) = *player;
@@ -189,18 +193,25 @@ fn on_entity_clicked_over(
 
         if event.cursor_event == CursorEvent::CLICK
         {
-            if let Some(entity) = event.entity
+            if world.is_tile_occupied(pos)
             {
-                if !plants.contains(entity)
-                { 
-                    let id = commands.entity(entity).id();
-                    remove_entity_from_map_by_id(id); 
+                println!("Tile is occupied, {:?}", event.entity);
+                if let Some(entity) = event.entity
+                {
+                    if let Ok(plant) = plants.get(entity)
+                    {
+                        if plant.state == PlantState::MATURE
+                        {
+                            let id = commands.entity(entity).id();
 
-                    commands.entity(id).despawn();
+                            inventory.add(plant.harvested_item(), 2);
 
+                            world.remove_by_id(id);
+                            commands.entity(id).despawn();
+                        }
+                    }
                 }
-                
-            } else if !is_tile_occupied(pos)
+            } else if !world.is_tile_occupied(pos)
             {
                 writer.write(SpawnPlant 
                     { 
@@ -209,7 +220,8 @@ fn on_entity_clicked_over(
                         position: Vec3::new(pos.x, pos.y, 2.0),
                         growth_duration: 1.0, // 10s 
                 });
-            } /*else if let Some((x, y)) = world_to_tile_path(pos)
+            }
+            /*else if let Some((x, y)) = world_to_tile_path(pos)
             {
                 path_map.set_path(x, y);
 
@@ -260,7 +272,7 @@ fn on_entity_clicked_over(
     }
 }
 
-fn on_click_player(
+/*fn on_click_player(
     mut commands: Commands,
     mut reader: MessageReader<EntityClicked>,
 
@@ -286,4 +298,4 @@ fn on_click_player(
             }
         }
     }
-}
+}*/

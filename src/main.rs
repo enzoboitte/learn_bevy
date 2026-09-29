@@ -1,8 +1,8 @@
-use bevy::prelude::*;
+use bevy::{prelude::*};
 use bevy_rapier3d::prelude::*;
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt, config::ConfigureLoadingState};
 
-use crate::{entities::plant::PlantPlugin, utils::click_plugin::ClickPlugin, world::paths::PathMap};
+use crate::{entities::plant::PlantPlugin, utils::{click_plugin::ClickPlugin, inventory::Inventory}, world::{entities_world::EntitiesWorld, paths::PathMap}};
 
 mod entities;
 mod utils;
@@ -27,6 +27,8 @@ fn main()
 
         .init_state::<GameState>()
         .init_resource::<PathMap>()
+        .init_resource::<Inventory>()
+        .init_resource::<EntitiesWorld>()
 
         .add_loading_state(LoadingState::new(GameState::Loading)
             .continue_to_state(GameState::Playing)

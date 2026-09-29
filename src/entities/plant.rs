@@ -2,7 +2,7 @@ use std::{ops::Range, sync::LazyLock};
 use bevy::{platform::collections::HashMap, prelude::*};
 use bevy_rapier3d::prelude::*;
 
-use crate::{GameState, utils::{animations::{AnimationIndices, AnimationStep, FrameTimer}, game_assets::GameAssets}, world::{map::{add_entity_to_map, world_to_tile}, tiled::ENTITY_MAP}};
+use crate::{GameState, utils::{animations::{animate_sprites, AnimationIndices, AnimationStep, FrameTimer}, click_plugin::Clickable, game_assets::GameAssets, inventory::Item}, world::entities_world::EntitiesWorld};
 
 pub struct PlantPlugin;
 
@@ -14,7 +14,12 @@ impl Plugin for PlantPlugin
             .add_message::<SpawnPlant>()
             .add_message::<AnimationStep>()
             .add_systems(Update, (spawn_plant).run_if(in_state(GameState::Playing)))
-            .add_systems(FixedUpdate, (update_plants).run_if(in_state(GameState::Playing)));
+            .add_systems(
+                Update,
+                update_plants
+                    .after(animate_sprites)
+                    .run_if(in_state(GameState::Playing)),
+            );
     }
 }
 
@@ -58,12 +63,26 @@ pub enum PlantState
     MATURE = 4,
 }
 
+impl Plant
+{
+    pub fn harvested_item(&self) -> Item
+    {
+        match self.plant_type
+        {
+            PlantType::WHEAT => Item::Wheat,
+            PlantType::TOMATO => Item::Tomato,
+        }
+    }
+}
+
 fn spawn_plant(
     mut commands: Commands,
     game_assets: Res<GameAssets>,
 
     mut message: MessageReader<SpawnPlant>,
     time: Res<Time>,
+
+    mut world: ResMut<EntitiesWorld>
 )
 {
     for spawn_plant in message.read() 
@@ -71,7 +90,7 @@ fn spawn_plant(
         let start_time = time.elapsed_secs();
         let range = INDEX_PLANT_TYPE.get(&spawn_plant.plant_type).unwrap();
 
-        add_entity_to_map(spawn_plant.position.truncate(), commands.spawn((
+        world.insert(spawn_plant.position.truncate(), commands.spawn((
             Sprite::from_atlas_image(
                 game_assets.plant_texture.clone(),
                 TextureAtlas 
@@ -101,6 +120,8 @@ fn spawn_plant(
             RigidBody::Fixed,
             GravityScale(0.0),
             Collider::cuboid(16.0 / 2.0, 16.0 / 2.0, 0.1),
+
+            Clickable,
         ))
         .with_children(|parent| 
             {
@@ -139,7 +160,12 @@ fn update_plants(
                 1 => PlantState::THIRDGROWTH,
                 _ => PlantState::MATURE,
             };
-            println!("Plant state updated to: {:?}, {:?}", indices.state, animation_step.index);
+            println!(
+                "Plant {:?} state updated to: {:?}, {:?}",
+                animation_step.entity,
+                indices.state,
+                animation_step.index,
+            );
         }
     }
 
