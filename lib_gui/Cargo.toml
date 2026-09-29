@@ -1,0 +1,21 @@
+[package]
+name = "lib_gui"
+version = "0.1.0"
+edition = "2024"
+description = "Déclarer des interfaces Bevy simplement, à la SwiftUI"
+
+[dependencies]
+bevy = { version = "0.19.1", default-features = false, features = [
+    "ui_api",
+    "bevy_picking",
+    "ui_picking",
+] }
+
+[dev-dependencies]
+bevy = "0.19.1"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
