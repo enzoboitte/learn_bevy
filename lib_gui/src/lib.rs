@@ -26,6 +26,7 @@
 
 use bevy::{ecs::component::Mutable, prelude::*};
 
+pub mod anim;
 pub mod binding;
 pub mod font;
 pub mod interaction;
@@ -39,6 +40,7 @@ pub trait MutResource: Resource<Mutability = Mutable> {}
 impl<T: Resource<Mutability = Mutable>> MutResource for T {}
 
 pub mod prelude {
+    pub use crate::anim::{FrameAnimation, UiAnimation};
     pub use crate::font::GuiFont;
     pub use crate::{GuiPlugin, MutResource};
     pub use crate::modifiers::Modifiable;
@@ -64,6 +66,7 @@ impl Plugin for GuiPlugin {
                 (
                     interaction::update_interactive_colors,
                     font::apply_gui_font,
+                    (anim::animate_ui, anim::animate_frames),
                     (text_field::text_field_keyboard, text_field::sync_text_fields).chain(),
                     (
                         binding::update_bound_text,

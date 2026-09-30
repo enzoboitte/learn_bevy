@@ -6,7 +6,7 @@ use crate::entities::plant::*;
 use crate::utils::click_plugin::{CursorEvent, EntityClicked};
 use crate::utils::game_assets::GameAssets;
 use crate::utils::animations::*;
-use crate::utils::inventory::Inventory;
+use crate::utils::inventory::{Inventory, InventoryGuiPlugin};
 use crate::world::entities_world::EntitiesWorld;
 use crate::world::paths::{PathMap, PathTile};
 
@@ -20,6 +20,7 @@ impl Plugin for PlayerPlugin
     fn build(&self, app: &mut App) 
     {
         app
+            .add_plugins(InventoryGuiPlugin)
             .add_systems(OnEnter(GameState::Playing), spawn_player)
             .add_systems(Update, (move_player, update_indices, on_entity_clicked_over)
                                                         .run_if(in_state(GameState::Playing)));

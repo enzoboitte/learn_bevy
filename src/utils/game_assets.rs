@@ -46,4 +46,17 @@ pub struct GameAssets
     pub plant: Handle<TextureAtlasLayout>,
     #[asset(path = "tilesets/plants.png")]
     pub plant_texture: Handle<Image>,
+
+
+
+
+
+
+    // ui
+    #[asset(path = "ui/ui.png")]
+    pub ui_texture: Handle<Image>,
+    #[asset(texture_atlas_layout(tile_size_x = 32, tile_size_y = 32, columns = 6, rows = 8, offset_x = 704))]
+    pub ui_icons: Handle<TextureAtlasLayout>,
+    #[asset(texture_atlas_layout(tile_size_x = 16, tile_size_y = 16, columns = 18, rows = 3, offset_x = 608, offset_y = 256))]
+    pub ui_glyphs: Handle<TextureAtlasLayout>,
 }

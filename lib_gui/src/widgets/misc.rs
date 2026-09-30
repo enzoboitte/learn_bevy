@@ -84,6 +84,23 @@ impl ImageView {
         self.image.texture_atlas = Some(TextureAtlas { layout, index });
         self
     }
+    /// Shows only a region of the image, in pixels (for sprite sheets with irregular layouts).
+    ///
+    /// ```ignore
+    /// image(ui.clone()).region(455.0, 7.0, 18.0, 19.0).frame(54.0, 57.0)
+    /// ```
+    pub fn region(mut self, x: f32, y: f32, width: f32, height: f32) -> Self {
+        self.image.rect = Some(Rect::new(x, y, x + width, y + height));
+        self
+    }
+    /// Plays atlas `frames` at `fps` in a loop (use `.atlas(..)` first).
+    pub fn animate_frames(self, frames: impl Into<Vec<usize>>, fps: f32) -> Self {
+        self.insert(crate::anim::FrameAnimation::new(frames.into(), fps, true))
+    }
+    /// Plays atlas `frames` once and stays on the last one.
+    pub fn animate_frames_once(self, frames: impl Into<Vec<usize>>, fps: f32) -> Self {
+        self.insert(crate::anim::FrameAnimation::new(frames.into(), fps, false))
+    }
     /// Ignores the image's aspect ratio and stretches it to the frame.
     pub fn stretch(mut self) -> Self {
         self.image.image_mode = NodeImageMode::Stretch;

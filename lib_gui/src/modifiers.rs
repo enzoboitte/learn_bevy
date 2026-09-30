@@ -1,6 +1,7 @@
 use bevy::{ecs::{observer::IntoEntityObserver, system::SystemId}, prelude::*};
 
 use crate::{
+    anim::{UiAnimation, bounce_on_click},
     binding::{BoundBackground, BoundDisplay, BoundNode},
     interaction::{InteractiveColors, OwnedSystems},
     view::ParentLayout,
@@ -32,6 +33,7 @@ pub struct Modifiers {
     gradient: Option<BackgroundGradient>,
     outline: Option<Outline>,
     transform: Option<UiTransform>,
+    anim: Option<UiAnimation>,
     hovered: Option<Color>,
     pressed: Option<Color>,
     actions: Vec<(PointerTrigger, Register)>,
@@ -48,6 +50,7 @@ impl Modifiers {
             gradient: None,
             outline: None,
             transform: None,
+            anim: None,
             hovered: None,
             pressed: None,
             actions: Vec::new(),
@@ -80,6 +83,16 @@ impl Modifiers {
         }
         if let Some(transform) = self.transform {
             entity.insert(transform);
+        }
+        if let Some(mut anim) = self.anim {
+            anim.base = self.transform.unwrap_or(UiTransform::IDENTITY);
+            if anim.needs_interaction() {
+                entity.insert_if_new(Interaction::default());
+            }
+            if anim.tap_bounce {
+                entity.observe(bounce_on_click);
+            }
+            entity.insert(anim);
         }
         if self.hovered.is_some() || self.pressed.is_some() {
             let normal = self.background.unwrap_or(Color::NONE);
@@ -333,6 +346,53 @@ pub trait Modifiable: Sized {
     /// Won't shrink when space is lacking.
     fn no_shrink(self) -> Self {
         self.node(|n| n.flex_shrink = 0.0)
+    }
+
+    // ---------- animations ----------
+
+    #[doc(hidden)]
+    fn animation(&mut self) -> &mut UiAnimation {
+        self.modifiers().anim.get_or_insert_with(UiAnimation::default)
+    }
+    /// Smoothly grows (or shrinks) while hovered, e.g. `1.1`.
+    fn hover_scale(mut self, scale: f32) -> Self {
+        self.animation().hover_scale = scale;
+        self
+    }
+    /// Smoothly shrinks while pressed, e.g. `0.9`.
+    fn press_scale(mut self, scale: f32) -> Self {
+        self.animation().press_scale = scale;
+        self
+    }
+    /// Little "boing" when clicked.
+    fn tap_bounce(mut self) -> Self {
+        self.animation().tap_bounce = true;
+        self
+    }
+    /// Breathing effect: scale oscillates by `amount` (0.05 = ±5%) `speed` times per second.
+    fn pulse(mut self, amount: f32, speed: f32) -> Self {
+        self.animation().pulse = Some((amount, speed));
+        self
+    }
+    /// Floats up and down by `pixels`, `speed` times per second.
+    fn bob(mut self, pixels: f32, speed: f32) -> Self {
+        self.animation().bob = Some((pixels, speed));
+        self
+    }
+    /// Rocks left and right by `degrees`, `speed` times per second.
+    fn wiggle(mut self, degrees: f32, speed: f32) -> Self {
+        self.animation().wiggle = Some((degrees, speed));
+        self
+    }
+    /// Rotates continuously (degrees per second).
+    fn spin(mut self, degrees_per_second: f32) -> Self {
+        self.animation().spin = degrees_per_second;
+        self
+    }
+    /// Grows from nothing with a small overshoot when spawned.
+    fn pop_in(mut self, seconds: f32) -> Self {
+        self.animation().pop_in = Some(seconds);
+        self
     }
 
     // ---------- events ----------

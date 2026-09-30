@@ -1,7 +1,7 @@
 use bevy::{prelude::*};
 use bevy_rapier3d::prelude::*;
 use bevy_asset_loader::loading_state::{LoadingState, LoadingStateAppExt, config::ConfigureLoadingState};
-use lib_gui::font::GuiFont;
+use lib_gui::{GuiPlugin, font::GuiFont};
 
 use crate::{entities::plant::PlantPlugin, utils::{click_plugin::ClickPlugin, game_assets::GameAssets, inventory::Inventory}, world::{entities_world::EntitiesWorld, paths::PathMap}};
 
@@ -14,7 +14,8 @@ fn main()
 {
     App::new()
         .add_plugins((
-            DefaultPlugins.set(ImagePlugin::default_nearest()),
+            DefaultPlugins
+                .set(ImagePlugin::default_nearest()),
             RapierPhysicsPlugin::<NoUserData>::default(),
             RapierDebugRenderPlugin::default(),
         ))
@@ -24,6 +25,7 @@ fn main()
             world::map::MapPlugin,
             ClickPlugin,
             PlantPlugin,
+            GuiPlugin,
         ))
 
         .init_state::<GameState>()
