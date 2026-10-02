@@ -9,6 +9,7 @@ pub struct EntitiesWorld
     entities: HashMap<(usize, usize), Entity>,
 }
 
+#[allow(dead_code)]
 impl EntitiesWorld 
 {
     pub fn insert(&mut self, position: Vec2, entity: Entity)
