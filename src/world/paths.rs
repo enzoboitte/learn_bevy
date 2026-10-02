@@ -1,7 +1,7 @@
 
 use bevy::prelude::*;
 
-use crate::world::tiled::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE};
+use crate::world::{entities_world::EntitiesWorld, map::tile_to_world, tiled::{MAP_HEIGHT, MAP_WIDTH, TILE_SIZE}};
 
 pub const EMPTY: i32 = -1;
 pub const PATH: i32 = 1;
@@ -40,24 +40,24 @@ impl PathMap
         Self::is_inside(x, y).then_some(self.tiles[y][x])
     }
 
-    pub fn set(&mut self, x: usize, y: usize, value: i32) -> bool 
+    pub fn set(&mut self, x: usize, y: usize, value: i32, world: &mut EntitiesWorld) -> bool 
     {
-        if !Self::is_inside(x, y) 
+        if !Self::is_inside(x, y) && world.is_tile_occupied(tile_to_world(x, y))
         { return false; }
 
         self.tiles[y][x] = value;
         true
     }
 
-    pub fn set_path(&mut self, x: usize, y: usize) -> bool 
+    pub fn set_path(&mut self, x: usize, y: usize, world: &mut EntitiesWorld) -> bool 
     {
-        self.set(x, y, PATH)
+        self.set(x, y, PATH, world)
     }
 
     #[allow(dead_code)]
-    pub fn remove_path(&mut self, x: usize, y: usize) -> bool 
+    pub fn remove_path(&mut self, x: usize, y: usize, world: &mut EntitiesWorld) -> bool 
     {
-        self.set(x, y, EMPTY)
+        self.set(x, y, EMPTY, world)
     }
 
     pub fn has_path(&self, x: usize, y: usize) -> bool 

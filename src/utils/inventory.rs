@@ -98,6 +98,7 @@ impl Default for Inventory
         {
             inventory.add(tool, 1);
         }
+        inventory.add(Item::Tomato, 1);
         inventory
     }
 }
@@ -143,6 +144,11 @@ impl Inventory
     pub fn selected_item(&self) -> Item 
     {
         self.slots[self.selected].item
+    }
+
+    pub fn has_item(&self, item: Item) -> bool 
+    {
+        self.slots.iter().any(|s| s.item == item && s.quantity > 0)
     }
 }
 

@@ -6,9 +6,10 @@ use crate::entities::plant::*;
 use crate::utils::click_plugin::{CursorEvent, EntityClicked};
 use crate::utils::game_assets::GameAssets;
 use crate::utils::animations::*;
-use crate::utils::inventory::{Inventory, InventoryGuiPlugin};
+use crate::utils::inventory::{Inventory, InventoryGuiPlugin, Item};
 use crate::world::entities_world::EntitiesWorld;
-use crate::world::paths::{PathMap, PathTile};
+use crate::world::map::tile_to_world;
+use crate::world::paths::{PATH_TILE_BY_MASK, PathMap, PathTile, world_to_tile_path};
 
 const PLAYER_SPEED: f32 = 100.0;
 const GRID_CELL_SIZE: f32 = 16.0;
@@ -214,63 +215,93 @@ fn on_entity_clicked_over(
                 }
             } else if !world.is_tile_occupied(pos)
             {
-                writer.write(SpawnPlant 
-                    { 
-                        plant_type: PlantType::TOMATO, 
-                        plant_state: PlantState::FIRSTGROWTH, 
-                        position: Vec3::new(pos.x, pos.y, 2.0),
-                        growth_duration: 1.0, // 10s 
-                });
-            }
-            /*else if let Some((x, y)) = world_to_tile_path(pos)
-            {
-                path_map.set_path(x, y);
-
-                if let Some(tile_index) = path_map.tile_index(x, y)
+                let selected_item = inventory.selected_item().clone();
+                if (selected_item == Item::Tomato || 
+                    selected_item == Item::Wheat)
+                    && inventory.has_item(selected_item)
                 {
-                    let position = tile_to_world(x, y);
-                    let already_exists = path_tiles
-                        .iter()
-                        .any(|(tile, _)| tile.x == x && tile.y == y);
+                    inventory.remove(selected_item, 1);
+                    writer.write(SpawnPlant 
+                        { 
+                            plant_type: PlantType::TOMATO, 
+                            plant_state: PlantState::FIRSTGROWTH, 
+                            position: Vec3::new(pos.x, pos.y, 2.0),
+                            growth_duration: 1.0, // 10s 
+                    });
+                } else if inventory.selected_item() == Item::Hoe
+                {
+                    place_path(
+                        &mut commands,
+                        &mut path_map,
+                        &mut path_tiles,
+                        &game_assets,
+                        &mut world,
+                        pos,
+                    );
+                }
+            }
+        }
+    }
+}
 
-                    if !already_exists
-                    {
-                        commands.spawn((
-                            Sprite::from_atlas_image(
-                                game_assets.paths_texture.clone(), 
-                                TextureAtlas { 
-                                    layout: game_assets.paths_layout.clone(),
-                                    index: tile_index,
-                                }
-                            ),
-                            Transform::from_xyz(position.x, position.y, 1.0),
-                            PathTile { x, y },
-                        ));
-                    }
 
-                    for (tile_x, tile_y) in PathMap::affected_tiles(x, y) 
+fn place_path(
+    commands: &mut Commands,
+    path_map: &mut ResMut<PathMap>,
+    path_tiles: &mut Query<(&PathTile, &mut Sprite)>,
+    game_assets: &GameAssets,
+    world: &mut ResMut<EntitiesWorld>,
+
+    pos: Vec2,
+) 
+{
+    if let Some((x, y)) = world_to_tile_path(pos)
+    {
+        path_map.set_path(x, y, world);
+
+        if let Some(tile_index) = path_map.tile_index(x, y)
+        {
+            let position = tile_to_world(x, y);
+            let already_exists = path_tiles
+                .iter()
+                .any(|(tile, _)| tile.x == x && tile.y == y);
+
+            if !already_exists
+            {
+                commands.spawn((
+                    Sprite::from_atlas_image(
+                        game_assets.paths_texture.clone(), 
+                        TextureAtlas { 
+                            layout: game_assets.paths_layout.clone(),
+                            index: tile_index,
+                        }
+                    ),
+                    Transform::from_xyz(position.x, position.y, 1.0),
+                    PathTile { x, y },
+                ));
+            }
+
+            for (tile_x, tile_y) in PathMap::affected_tiles(x, y) 
+            {
+                if PathMap::is_inside(tile_x, tile_y) 
+                {
+                    let mask = path_map.path_mask(tile_x, tile_y);
+                    let index = PATH_TILE_BY_MASK[mask as usize];
+
+                    for (tile, mut sprite) in path_tiles.iter_mut() 
                     {
-                        if PathMap::is_inside(tile_x, tile_y) 
+                        if tile.x == tile_x && tile.y == tile_y 
                         {
-                            let mask = path_map.path_mask(tile_x, tile_y);
-                            let index = PATH_TILE_BY_MASK[mask as usize];
-
-                            for (tile, mut sprite) in path_tiles.iter_mut() 
+                            if let Some(atlas) = &mut sprite.texture_atlas 
                             {
-                                if tile.x == tile_x && tile.y == tile_y 
-                                {
-                                    if let Some(atlas) = &mut sprite.texture_atlas 
-                                    {
-                                        atlas.index = index;
-                                    }
-                                }
+                                atlas.index = index;
                             }
                         }
                     }
                 }
-            }*/
+            }
         }
-    }
+    }   
 }
 
 /*fn on_click_player(
